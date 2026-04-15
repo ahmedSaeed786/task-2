@@ -206,112 +206,119 @@
         });
         $(document).ready(function() {
 
-            let items = [];
+                    let items = [];
 
-            let dataItem = [];
-            // Select all container rows
-            let rows = document.querySelectorAll('.row');
+                    let dataItem = [];
+                    // Select all container rows
+                    let rows = document.querySelectorAll('.row');
 
-            rows.forEach(row => {
-                // Find inputs within this specific row
-                let name1 = row.querySelector('input[name1="name1[]"]').value;
-                let qty1 = row.querySelector('input[name1="qty1[]"]').value;
-                let amount1 = row.querySelector('input[name1="amount1[]"]').value;
-                let total1 = row.querySelector('input[name1="total1[]"]').value;
+                    rows.forEach(row => {
+                        // Find inputs within this specific row
+                        let name1 = row.querySelector('input[name1="name1[]"]').value;
+                        let qty1 = row.querySelector('input[name1="qty1[]"]').value;
+                        let amount1 = row.querySelector('input[name1="amount1[]"]').value;
+                        let total1 = row.querySelector('input[name1="total1[]"]').value;
 
-                // Only add if at least one field is filled
-                if (name1 || qty1 || amount1 || total1) {
-                    dataItem.push({
-                        name1: name1,
-                        qty1: qty1,
-                        amount1: amount1,
-                        total1: total1
-                    });
-                }
-            });
+                        // Only add if at least one field is filled
+                        let ok = [name1, qty1, total1, amount1]
+                        for (let i = 0; i < fruits.length; i++) {
 
-            let isValid = {
-                customer_name: false,
-                phone: false,
-                name: false,
-                qty: false,
-                amount: false,
-                total: false
-            };
+                        }
+                        dataItem = ok;
+                        //     if (name1 || qty1 || amount1 || total1) {
+                        //         dataItem.push({
+                        //             name1: name1,
+                        //             qty1: qty1,
+                        //             amount1: amount1,
+                        //             total1: total1
+                        //         });
+                        //     }
+                        // });
 
-
-            function validateField(fieldName, value) {
-                return $.ajax({
-                    url: "{{ route('customer.validate') }}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        field: fieldName,
-                        value: value
-                    },
-                    success: function() {
-                        let input = $('[name="' + fieldName + '"]');
-
-                        input.removeClass('is-invalid');
-                        $('#error-' + fieldName).remove();
-
-                        isValid[fieldName] = true;
-                    },
-                    error: function(xhr) {
-                        let error = xhr.responseJSON.error;
-                        let input = $('[name="' + fieldName + '"]');
-
-                        input.addClass('is-invalid');
-                        $('#error-' + fieldName).remove();
-
-                        input.after(
-                            '<div id="error-' + fieldName + '" class="invalid-feedback">' +
-                            error +
-                            '</div>'
-                        );
-
-                        isValid[fieldName] = false;
-                    }
-                });
-            }
-
-            // ✅ AUTO CALCULATE TOTAL
-            $('[name="qty"], [name="amount"]').on('keyup', function() {
-                let qty = parseFloat($('[name="qty"]').val()) || 0;
-                let amount = parseFloat($('[name="amount"]').val()) || 0;
-                $('[name="total"]').val(qty * amount);
-            });
-
-            // ✅ ADD ITEM
-            $('#btnAddItem').on('click', function() {
-
-                let name = $('[name="name"]').val();
-                let qty = $('[name="qty"]').val();
-                let amount = $('[name="amount"]').val();
-                let total = $('[name="total"]').val();
-
-                $.when(
-                    validateField('name', name),
-                    validateField('qty', qty),
-                    validateField('amount', amount),
-                    validateField('total', total)
-                ).done(function() {
-
-                    if (isValid.name && isValid.qty && isValid.amount && isValid.total) {
+                        let isValid = {
+                            customer_name: false,
+                            phone: false,
+                            name: false,
+                            qty: false,
+                            amount: false,
+                            total: false
+                        };
 
 
-                        items.push({
-                            name: name,
-                            qty: qty,
-                            amount: amount,
-                            total: total
+                        function validateField(fieldName, value) {
+                            return $.ajax({
+                                url: "{{ route('customer.validate') }}",
+                                type: "POST",
+                                data: {
+                                    _token: "{{ csrf_token() }}",
+                                    field: fieldName,
+                                    value: value
+                                },
+                                success: function() {
+                                    let input = $('[name="' + fieldName + '"]');
+
+                                    input.removeClass('is-invalid');
+                                    $('#error-' + fieldName).remove();
+
+                                    isValid[fieldName] = true;
+                                },
+                                error: function(xhr) {
+                                    let error = xhr.responseJSON.error;
+                                    let input = $('[name="' + fieldName + '"]');
+
+                                    input.addClass('is-invalid');
+                                    $('#error-' + fieldName).remove();
+
+                                    input.after(
+                                        '<div id="error-' + fieldName +
+                                        '" class="invalid-feedback">' +
+                                        error +
+                                        '</div>'
+                                    );
+
+                                    isValid[fieldName] = false;
+                                }
+                            });
+                        }
+
+                        // ✅ AUTO CALCULATE TOTAL
+                        $('[name="qty"], [name="amount"]').on('keyup', function() {
+                            let qty = parseFloat($('[name="qty"]').val()) || 0;
+                            let amount = parseFloat($('[name="amount"]').val()) || 0;
+                            $('[name="total"]').val(qty * amount);
                         });
 
-                        const merged = [items, dataItem]
-                        $('#itemsInput').val(JSON.stringify(merged));
+                        // ✅ ADD ITEM
+                        $('#btnAddItem').on('click', function() {
+
+                            let name = $('[name="name"]').val();
+                            let qty = $('[name="qty"]').val();
+                            let amount = $('[name="amount"]').val();
+                            let total = $('[name="total"]').val();
+
+                            $.when(
+                                validateField('name', name),
+                                validateField('qty', qty),
+                                validateField('amount', amount),
+                                validateField('total', total)
+                            ).done(function() {
+
+                                if (isValid.name && isValid.qty && isValid.amount && isValid
+                                    .total) {
 
 
-                        let row = `
+                                    items.push({
+                                        name: name,
+                                        qty: qty,
+                                        amount: amount,
+                                        total: total
+                                    });
+
+                                    const merged = [items, dataItem]
+                                    $('#itemsInput').val(JSON.stringify(merged));
+
+
+                                    let row = `
                     <tr>
                         <td>${name}</td>
                         <td>${qty}</td>
@@ -320,49 +327,49 @@
                     </tr>
                 `;
 
-                        $('table tbody').append(row);
+                                    $('table tbody').append(row);
 
 
-                        $('[name="name"]').val('');
-                        $('[name="qty"]').val('');
-                        $('[name="amount"]').val('');
-                        $('[name="total"]').val('');
+                                    $('[name="name"]').val('');
+                                    $('[name="qty"]').val('');
+                                    $('[name="amount"]').val('');
+                                    $('[name="total"]').val('');
 
 
-                        isValid.name = false;
-                        isValid.qty = false;
-                        isValid.amount = false;
-                        isValid.total = false;
-                    }
+                                    isValid.name = false;
+                                    isValid.qty = false;
+                                    isValid.amount = false;
+                                    isValid.total = false;
+                                }
 
-                });
+                            });
 
-            });
-
-
-            $('#customerForm').on('submit', function(e) {
-                e.preventDefault();
-
-                let customer_name = $('#customer_name').val();
-                let phone = $('#phone').val();
-
-                $.when(
-                    validateField('customer_name', customer_name),
-                    validateField('phone', phone)
-                ).done(function() {
-
-                    if (isValid.customer_name && isValid.phone) {
+                        });
 
 
-                        $('#itemsInput').val(JSON.stringify(items));
+                        $('#customerForm').on('submit', function(e) {
+                            e.preventDefault();
 
-                        $('#customerForm')[0].submit();
-                    }
+                            let customer_name = $('#customer_name').val();
+                            let phone = $('#phone').val();
 
-                });
-            });
+                            $.when(
+                                validateField('customer_name', customer_name),
+                                validateField('phone', phone)
+                            ).done(function() {
 
-        });
+                                if (isValid.customer_name && isValid.phone) {
+
+
+                                    $('#itemsInput').val(JSON.stringify(items));
+
+                                    $('#customerForm')[0].submit();
+                                }
+
+                            });
+                        });
+
+                    });
     </script>
 
 

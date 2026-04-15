@@ -116,9 +116,21 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, customer $customer)
+    public function update(Request $request)
     {
 
+
+        $data = $request->name1;
+        $data2 = $request->qty1;
+        $data3 = $request->amount1;
+        // $daa= $data->
+        return $request->all();
+
+        foreach ($request->name1 as $item) {
+            $data[] = $item;
+        }
+
+        return $data;
         return $request->all();
 
         //
