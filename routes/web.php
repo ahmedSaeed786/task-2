@@ -39,5 +39,6 @@ Route::get('logout', [userController::class, 'logout'])->name('logout')->middlew
 Route::get('customer', [CustomerController::class, 'index'])->name('customer')->middleware('auth');
 Route::post('customers', [CustomerController::class, 'store'])->name('customers')->middleware('auth');
 Route::post('/customer/validate', [CustomerController::class, 'validateField'])->name('customer.validate')->middleware('auth');
-Route::post('/customer/edit', [CustomerController::class, 'edit'])->name('customer_edit')->middleware('auth');
+Route::post('customer_edit', [CustomerController::class, 'show'])->name('customer_edit')->middleware('auth');
+Route::post('customer_update', [CustomerController::class, 'update'])->name('customer_update')->middleware('auth');
 Route::post('/customer/delete', [CustomerController::class, 'destroy'])->name('destroy')->middleware('auth');

@@ -164,7 +164,7 @@
                                             <form class="user" method="POST" action="{{ Route('destroy') }}">
 
                                                 @csrf
-
+                                                @method('delete')
                                                 <input type="hidden" name="id" value="{{ $order->id }}">
                                                 <button type="submit" class="btn btn-danger">
                                                     Delete</button>

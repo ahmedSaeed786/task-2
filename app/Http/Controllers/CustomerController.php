@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\order;
 use App\Models\item;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
@@ -23,6 +24,13 @@ class CustomerController extends Controller
         $customer = customer::orderBy('id', 'desc')->get();
 
         return view('pages.orders.order', compact('customer', 'items', 'orders'));
+    }
+    public function show(Request $request)
+    {
+        //
+        $itemDetail = item::get();
+        $items = customer::where('id', $request->id)->with('item')->first();
+        return view('pages.orders.orderEdit', compact('items', 'itemDetail'));
     }
 
     /**
@@ -92,19 +100,16 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(customer $customer)
-    {
-        //
-    }
+
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request)
     {
-        $items = customer::where('id', $request->id)->with('item')->first();
+        // $items = customer::where('id', $request->id)->with('item')->first();
 
-        return view('pages.orders.orderEdit');
+
         //
     }
 
@@ -113,6 +118,9 @@ class CustomerController extends Controller
      */
     public function update(Request $request, customer $customer)
     {
+
+        return $request->all();
+
         //
     }
 
