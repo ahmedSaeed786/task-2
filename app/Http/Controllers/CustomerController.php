@@ -123,7 +123,8 @@ class CustomerController extends Controller
         $data = $request->name1;
         $data2 = $request->qty1;
         $data3 = $request->amount1;
-        // $daa= $data->
+        $daa = [$data, $data2, $data3];
+        return $daa;
         return $request->all();
 
         foreach ($request->name1 as $item) {
