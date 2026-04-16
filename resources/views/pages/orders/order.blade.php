@@ -161,14 +161,17 @@
                                                     Edit</button>
 
                                             </form>
-                                            <form class="user" method="POST" action="{{ Route('destroy') }}">
+                                            {{-- <form class="user" method="POST" action="{{ Route('destroy') }}">
 
                                                 @csrf
 
                                                 <input type="hidden" name="id" value="{{ $order->id }}">
                                                 <button type="submit" class="btn btn-danger">
-                                                    Delete</button>
+                                                    Delete</button> --}}
 
+
+                                            <button class="btn btn-danger" value="{{ $order->id }}" id="deleteUser"
+                                                onClick='doAction("Delete", "Delete will permanently remove the record. Are you sure?");'>Delete</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -189,6 +192,44 @@
 
 
     <script>
+        function doAction(action, message) {
+
+            const myElement = document.getElementById("deleteUser");
+            const value = myElement.value;
+
+            if (confirm(message)) {
+
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/destroy',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "id": value
+                    },
+                });
+
+
+
+            } else {
+
+                console.log(action + ' is cancelled');
+            }
+        };
+
+
+
+
+
+
+
+
+
+
+
+
+
         // customer Name Validation
         $('#customer_name').on('keypress', function(e) {
             var keyCode = e.which;

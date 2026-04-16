@@ -184,6 +184,6 @@ class CustomerController extends Controller
         customer::where('id', $request->id)->delete();
         order::where('c_id', $request->id)->delete();
 
-        return back()->with('msg', 'Customer Deleted Successfully!');
+        return Redirect('customer')->with('msg', 'Customer Deleted Successfully!');
     }
 }

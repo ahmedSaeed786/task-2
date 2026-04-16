@@ -124,13 +124,17 @@
                                     Edit</button>
 
                             </form>
+
+                            <button class="btn btn-danger" value="{{ $item->id }}" id="deleteUser"
+                                onClick='doAction("Delete", "Delete will permanently remove the record. Are you sure?");'>Delete</button>
+                            {{-- 
                             <form class="user" method="POST" action="{{ Route('user_delete') }}">
 
                                 @csrf
                                 @method('delete')
                                 <input type="hidden" name="id" value="{{ $item->id }}">
                                 <button type="submit" class="btn btn-danger">
-                                    Delete</button>
+                                    Delete</button> --}}
 
                             </form>
                         </td>
@@ -147,6 +151,33 @@
 
 
     <script>
+        function doAction(action, message) {
+
+            const myElement = document.getElementById("deleteUser");
+            const value = myElement.value;
+
+            if (confirm(message)) {
+
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/user_delete',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "id": value
+                    },
+                });
+
+
+
+            } else {
+
+                console.log(action + ' is cancelled');
+            }
+        };
+
+
         $(".toggle-password").click(function() {
 
             $(this).toggleClass("fa-eye fa-eye-slash");
