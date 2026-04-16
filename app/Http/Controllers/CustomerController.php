@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
+use Illuminate\Support\Facades\DB;
+
 class CustomerController extends Controller
 {
     /**
@@ -130,47 +132,52 @@ class CustomerController extends Controller
 
         // return $request->all();
 
-
-        $data = $request->name1;
-        $data2 = $request->qty1;
-        $data3 = $request->amount1;
-        $total = $request->total1;
-
-
-        customer::where('id', $request->id)->update([
-            "name" => $request->customer_name,
-            "date" => $request->date,
-            "phone" => $request->phone,
-        ]);
-        order::where('c_id', $request->id)->delete();
+        try {
+            DB::beginTransaction();
+            $data = $request->name1;
+            $data2 = $request->qty1;
+            $data3 = $request->amount1;
+            $total = $request->total1;
 
 
-        for ($i = 0; $i < count($data); $i++) {
-
-            order::create([
-                'name'   => $data[$i],
-                'qty'    => $data2[$i],
-                'amount' => $data3[$i],
-                'total'  => $total[$i],
-                'c_id'   => $request->id,
+            customer::where('id', $request->id)->update([
+                "name" => $request->customer_name,
+                "date" => $request->date,
+                "phone" => $request->phone,
             ]);
-        }
+            order::where('c_id', $request->id)->delete();
 
-        $items = json_decode($request->items);
-        if ($items != null) {
-            foreach ($items as $item) {
-                $order = order::create([
 
-                    'name' => $item->name,
-                    'qty' =>  $item->qty,
-                    'amount' =>  $item->amount,
-                    'total' =>  $item->total,
-                    'c_id' =>  $request->id,
+            for ($i = 0; $i < count($data); $i++) {
+
+                order::create([
+                    'name'   => $data[$i],
+                    'qty'    => $data2[$i],
+                    'amount' => $data3[$i],
+                    'total'  => $total[$i],
+                    'c_id'   => $request->id,
                 ]);
             }
+
+            $items = json_decode($request->items);
+            if ($items != null) {
+                foreach ($items as $item) {
+                    $order = order::create([
+
+                        'name' => $item->name,
+                        'qty' =>  $item->qty,
+                        'amount' =>  $item->amount,
+                        'total' =>  $item->total,
+                        'c_id' =>  $request->id,
+                    ]);
+                }
+            }
+            DB::commit();
+            return Redirect('/');
+        } catch (\Throwable $th) {
+            //throw $th;
         }
 
-        return Redirect('/');
 
 
         //
@@ -181,6 +188,7 @@ class CustomerController extends Controller
      */
     public function destroy(Request $request)
     {
+        dd($request->all());
         customer::where('id', $request->id)->delete();
         order::where('c_id', $request->id)->delete();
 

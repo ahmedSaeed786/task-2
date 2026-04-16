@@ -109,7 +109,8 @@
 
                             <div class="row" style="float: right">
                                 <div class="col">
-                                    <button type="submit" name="action" value="customer" class="btn btn-primary">
+                                    <button type="submit" name="action" onclick="disable()" value="customer"
+                                        class="customerInsert btn btn-primary">
                                         Submit
                                     </button>
 
@@ -170,8 +171,11 @@
                                                     Delete</button> --}}
 
 
-                                            <button class="btn btn-danger" value="{{ $order->id }}" id="deleteUser"
-                                                onClick='doAction("Delete", "Delete will permanently remove the record. Are you sure?");'>Delete</button>
+                                            <button class="btn btn-danger" value="{{ $order->id }}"
+                                                class="deleteUser" onClick="doAction(this->id);">Delete</button>
+
+
+
                                             </form>
                                         </td>
                                     </tr>
@@ -192,30 +196,31 @@
 
 
     <script>
-        function doAction(action, message) {
+        function doAction(action) {
 
-            const myElement = document.getElementById("deleteUser");
-            const value = myElement.value;
+            // const myElement = document.getElementById("deleteUser");
+            // const value = myElement.value;
+            alert(action)
 
-            if (confirm(message)) {
-
-
-
-                $.ajax({
-                    type: "POST",
-                    url: '/destroy',
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "id": value
-                    },
-                });
+            // if (confirm(message)) {
 
 
 
-            } else {
+            //     $.ajax({
+            //         type: "POST",
+            //         url: '/destroy',
+            //         data: {
+            //             "_token": "{{ csrf_token() }}",
+            //             "id": value
+            //         },
+            //     });
+            //     window.location.reload();
 
-                console.log(action + ' is cancelled');
-            }
+
+            // } else {
+
+            //     console.log(action + ' is cancelled');
+            // }
         };
 
 
