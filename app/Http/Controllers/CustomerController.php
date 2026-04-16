@@ -6,6 +6,7 @@ use App\Models\customer;
 use Illuminate\Http\Request;
 use App\Models\order;
 use App\Models\item;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
@@ -25,12 +26,20 @@ class CustomerController extends Controller
 
         return view('pages.orders.order', compact('customer', 'items', 'orders'));
     }
+    public function invoice(Request $request)
+    {
+
+
+        $items = customer::withSum('item', 'total')->where('id', $request->id)->with('item')->first();
+        return $items;
+    }
     public function show(Request $request)
     {
         //
+        $list = item::get();
         $itemDetail = item::get();
         $items = customer::where('id', $request->id)->with('item')->first();
-        return view('pages.orders.orderEdit', compact('items', 'itemDetail'));
+        return view('pages.orders.orderEdit', compact('items', 'itemDetail', 'list'));
     }
 
     /**
@@ -119,20 +128,50 @@ class CustomerController extends Controller
     public function update(Request $request)
     {
 
+        // return $request->all();
+
 
         $data = $request->name1;
         $data2 = $request->qty1;
         $data3 = $request->amount1;
-        $daa = [$data, $data2, $data3];
-        return $daa;
-        return $request->all();
+        $total = $request->total1;
 
-        foreach ($request->name1 as $item) {
-            $data[] = $item;
+
+        customer::where('id', $request->id)->update([
+            "name" => $request->customer_name,
+            "date" => $request->date,
+            "phone" => $request->phone,
+        ]);
+        order::where('c_id', $request->id)->delete();
+
+
+        for ($i = 0; $i < count($data); $i++) {
+
+            order::create([
+                'name'   => $data[$i],
+                'qty'    => $data2[$i],
+                'amount' => $data3[$i],
+                'total'  => $total[$i],
+                'c_id'   => $request->id,
+            ]);
         }
 
-        return $data;
-        return $request->all();
+        $items = json_decode($request->items);
+        if ($items != null) {
+            foreach ($items as $item) {
+                $order = order::create([
+
+                    'name' => $item->name,
+                    'qty' =>  $item->qty,
+                    'amount' =>  $item->amount,
+                    'total' =>  $item->total,
+                    'c_id' =>  $request->id,
+                ]);
+            }
+        }
+
+        return Redirect('/');
+
 
         //
     }

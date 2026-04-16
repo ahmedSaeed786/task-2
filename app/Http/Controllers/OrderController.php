@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\order;
 use Illuminate\Http\Request;
 
+
 class OrderController extends Controller
 {
     /**
@@ -12,6 +13,9 @@ class OrderController extends Controller
      */
     public function index()
     {
+
+        $lists = order::orderBy('id', 'desc')->get();
+        return view('pages.list', compact('lists'));
         //
     }
 

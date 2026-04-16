@@ -36,12 +36,13 @@ class userController extends Controller
 
         $user = User::count('id');
         $customer = customer::count('id');
+        $orderDetail = customer::withSum('item', 'total')->orderBy('id', 'desc')->with('item')->get();
         $total = order::sum('total');
         $saleItem = order::count('id');
         $userDetail = User::orderBy('id', 'desc')->get();
 
         // return $user;
-        return view('pages.dashboard', compact('user', 'total', 'customer', 'saleItem', 'userDetail'));
+        return view('pages.dashboard', compact('user', 'total', 'customer', 'saleItem', 'userDetail', 'orderDetail'));
     }
     public function validateField(Request $request)
     {

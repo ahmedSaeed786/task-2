@@ -1,66 +1,425 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+@section('title', 'home')
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+@extends('welcome')
+@section('content')
 
-## About Laravel
+    <style>
+        /* Styling the trigger button */
+        .open-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+        /* Full-page popup container */
+        .popup-overlay {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            /* Dimmed background */
+            z-index: 1000;
+            /* Stays on top */
+            justify-content: center;
+            align-items: center;
+        }
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+        /* Content inside the popup */
+        .popup-content {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+        /* Close button styling */
+        .close-btn {
+            margin-top: 20px;
+            padding: 8px 16px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-## Learning Laravel
+        body {
+            font-family: "Helvetica", Arial, sans-serif;
+            margin: 40px;
+            color: #333;
+        }
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+        }
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+        .invoice-title {
+            font-size: 36px;
+            font-weight: bold;
+        }
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+        .company-info {
+            text-align: right;
+        }
 
-## Laravel Sponsors
+        .parties {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+        }
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+        .party {
+            width: 45%;
+        }
 
-### Premium Partners
+        .party h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 10px;
+        }
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
 
-## Contributing
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
 
-## Code of Conduct
+        .totals {
+            width: 300px;
+            margin-left: auto;
+            margin-top: 20px;
+        }
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+        .totals tr td {
+            border: none;
+            padding: 8px 0;
+        }
 
-## Security Vulnerabilities
+        .total-row {
+            font-weight: bold;
+            font-size: 18px;
+            border-top: 2px solid #000;
+            padding-top: 10px !important;
+        }
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+        .notes {
+            margin-top: 40px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid #000;
+        }
+    </style>
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
 
-## License
+    </div>
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    <!-- Content Row -->
+    <div class="row">
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <a href="{{ Route('user_detail') }}">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Users</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $user }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <a href="{{ Route('customer') }}">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Earnings</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $total }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <a href="{{ Route('customer') }}">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Customers
+                                </div>
+                                <div class="row no-gutters align-items-center">
+                                    {{ $customer }}
+                                    <div class="col">
+                                        <div class="progress progress-sm mr-2">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pending Requests Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <a href="{{ Route('list') }}">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Sale Item</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $saleItem }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-comments fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <br>
+    <div class="row">
+
+        <!-- Area Chart -->
+        <div class="col-xl-10 col-lg-7">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Show</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($orderDetail as $list)
+                            <tr>
+                                <th scope="row">{{ $list->id }}</th>
+                                <td>{{ $list->name }}</td>
+                                <td>{{ $list->phone }}</td>
+                                <td>{{ $list->date }}</td>
+                                <td>{{ $list->item_sum_total }}</td>
+
+                                <td>
+
+
+
+
+
+
+
+                                    <button class="open-btn" onclick="togglePopup()">
+                                        Detail
+                                    </button>
+
+                                    <!-- The Popup Overlay -->
+                                    <div id="fullPagePopup" class="popup-overlay">
+                                        <div class="popup-content">
+                                            <div class="header">
+                                                <div class="invoice-title">INVOICE</div>
+                                                <div class="company-info">
+                                                    <div><strong>Invoice #:</strong> {{ $list->id }}</div>
+                                                    <div><strong>Date:</strong> {{ $list->date }}</div>
+                                                    <div><strong>Phone:</strong> {{ $list->phone }}</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="parties">
+                                                <div class="party">
+                                                    <h3>From</h3>
+                                                    <strong>{{ auth()->user()->name }}</strong><br />
+
+                                                </div>
+                                                <div class="party">
+                                                    <h3>To</h3>
+                                                    <strong>{{ $list->name }}</strong><br />
+
+                                                </div>
+                                            </div>
+
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Item Name</th>
+                                                        <th style="text-align: right">Quantity</th>
+                                                        <th style="text-align: right">Amount</th>
+                                                        <th style="text-align: right">Total</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    @foreach ($list->item as $detail)
+                                                        <tr>
+                                                            <td>{{ $detail->name }}</td>
+                                                            <td style="text-align: right">{{ $detail->qty }}</td>
+                                                            <td style="text-align: right">{{ $detail->amount }}</td>
+                                                            <td style="text-align: right">{{ $detail->total }}</td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                </tbody>
+                                            </table>
+
+                                            <table class="totals">
+                                                <tr>
+                                                    <td>Subtotal:</td>
+                                                    <td style="text-align: right">$ {{ $list->item_sum_total }}
+                                                    </td>
+                                                </tr>
+
+                                                <tr class="total-row">
+                                                    <td>Total:</td>
+                                                    <td style="text-align: right">$ {{ $list->item_sum_total }}
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <button class="close-btn" onclick="togglePopup()">Close Popup</button>
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+
+                    </tbody>
+                </table>
+
+
+
+            </div>
+        </div>
+
+
+    </div>
+    <script>
+        $.ajax({
+            url: '/invoice',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: $('#id').val(),
+
+            },
+            success: function(response) {
+                alert($arr);
+            }
+        });
+        $(document).ready(function() {
+            $(".button1").click(function() {
+                $.ajax({
+                    url: "button1.txt",
+                    /*more code*/
+                });
+            });
+        });
+
+        function togglePopup() {
+
+            const popup = document.getElementById("fullPagePopup");
+            // Switch between "flex" (to show and center) and "none" (to hide)
+            if (popup.style.display === "flex") {
+                popup.style.display = "none";
+            } else {
+                popup.style.display = "flex";
+            }
+        }
+
+        // Optional: Close popup if clicking outside the content box
+        window.onclick = function(event) {
+            const popup = document.getElementById("fullPagePopup");
+            if (event.target == popup) {
+                popup.style.display = "none";
+            }
+        };
+    </script>
+
+@endsection

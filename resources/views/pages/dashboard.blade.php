@@ -4,6 +4,132 @@
 @section('content')
 
 
+    <style>
+        /* Styling the trigger button */
+        .open-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Full-page popup container */
+        .popup-overlay {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            /* Dimmed background */
+            z-index: 1000;
+            /* Stays on top */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Content inside the popup */
+        .popup-content {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        /* Close button styling */
+        .close-btn {
+            margin-top: 20px;
+            padding: 8px 16px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+
+
+        .header {
+            /* display: flex; */
+            justify-content: space-between;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+        }
+
+        .invoice-title {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .company-info {
+            text-align: right;
+        }
+
+        .parties {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+        }
+
+        .party {
+            width: 45%;
+        }
+
+        .party h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .totals {
+            width: 300px;
+            margin-left: auto;
+            margin-top: 20px;
+        }
+
+        .totals tr td {
+            border: none;
+            padding: 8px 0;
+        }
+
+        .total-row {
+            font-weight: bold;
+            font-size: 18px;
+            border-top: 2px solid #000;
+            padding-top: 10px !important;
+        }
+
+        .notes {
+            margin-top: 40px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid #000;
+        }
+    </style>
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
@@ -83,18 +209,20 @@
         <!-- Pending Requests Card Example -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Sale Item</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $saleItem }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                <a href="{{ Route('list') }}">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Sale Item</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $saleItem }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-comments fa-2x text-gray-300"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -113,19 +241,136 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Action</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Show</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($userDetail as $item)
+                        @foreach ($orderDetail as $list)
                             <tr>
-                                <th scope="row">{{ $item->id }}</th>
-                                <td>{{ $item->name }}</td>
-                                <td>{{ $item->email }}</td>
-                                <td>Edit | Delete</td>
+                                <th scope="row">{{ $list->id }}</th>
+                                <td>{{ $list->name }}</td>
+                                <td>{{ $list->phone }}</td>
+                                <td>{{ $list->date }}</td>
+                                <td>{{ $list->item_sum_total }}</td>
+
+                                <td>
+
+
+
+
+
+
+
+                                    <button type="button" class="open-btn" id="btn-{{ $list->id }}" name="togglePopup"
+                                        onclick="togglePopup(); list({{ $list->id }});">
+                                        Show
+                                    </button>
+
+
+                                    <!-- The Popup Overlay -->
+                                    <div id="fullPagePopup" class="popup-overlay">
+                                        <div class="popup-content">
+                                            <div class="header">
+                                                <div class="invoice-title">INVOICE</div>
+                                                <div class="company-info">
+                                                    <div name="getid"><strong>Invoice <p id="getid"></p></strong>
+                                                    </div>
+                                                    <div><strong>Date:</strong>
+                                                        <p id="getDate"></p>
+                                                    </div>
+                                                    <div><strong>Phone:</strong>
+                                                        <p id="getPhone"></p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="parties">
+                                                    <div class="party">
+                                                        <h3>From</h3>
+                                                        <strong>{{ auth()->user()->name }}</strong><br />
+
+                                                    </div>
+                                                    <div class="party">
+                                                        <h3>To</h3>
+                                                        <strong>{{ $list->name }}</strong><br />
+
+                                                    </div>
+                                                </div>
+
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="text-align: right">Item Name</th>
+                                                            <th style="text-align: right">Quantity</th>
+                                                            <th style="text-align: right">Amount</th>
+                                                            <th style="text-align: right">Total</th>
+
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody id="biddersData">
+
+
+
+
+
+                                                    </tbody>
+                                                </table>
+
+                                                <table class="totals">
+                                                    <tr>
+                                                        <td>Subtotal:</td>
+                                                        <td style="text-align: right">
+                                                            <p id="gettotalSum"></p>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr class="total-row">
+                                                        <td>Total:</td>
+                                                        <td style="text-align: right">
+                                                            <p id="gettotalSum1"></p>
+
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                <button class="close-btn" onclick="togglePopup()">Close Popup</button>
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        </form>
+                                </td>
                             </tr>
                         @endforeach
+
 
                     </tbody>
                 </table>
@@ -138,5 +383,85 @@
 
     </div>
 
+
+    <script>
+        function list(id) {
+            let b = id;
+            console.log(id)
+            $.ajax({
+                url: '/invoice',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id: b,
+
+                },
+                success: function(data) {
+                    // $("#getid").val(data.id);
+                    $("#getid").html(data.id);
+                    $("#getDate").html(data.date);
+                    $("#getPhone").html(data.phone);
+                    console.log(data);
+                    $("#gettotalSum").html(data.item_sum_total);
+                    $("#gettotalSum1").html(data.item_sum_total);
+                    // data.item.forEach(element => {
+
+                    var details = data.item;
+
+                    if (details) {
+                        $('#biddersData').empty(); // Clear old data
+                        details.forEach(function(element) {
+                            console.log(element);
+                            $('#biddersData').append(
+                                '<tr><td>' + element.name + '</td><td>' + element.qty +
+                                '</td><td>' + element.amount + '</td><td>' + element.total +
+                                '</td></tr>'
+                            );
+                        });
+                    } else {
+                        console.error("Detail property not found in response");
+                    }
+
+                    detail.forEach(function(element) {
+
+                        console.log(element);
+                        // $('#biddersData').append('<tr><td>' + element.name + '</td><td>' + element.qty +
+                        //     " " + element.amount + '</td><td>' + element.total + '</td></tr>'
+                        // );
+
+                    });
+                    console.log(data.item);
+
+                },
+                error: function() {
+                    console.log(data);
+                }
+            });
+
+        }
+
+
+
+
+        function togglePopup() {
+
+            const popup = document.getElementById("fullPagePopup");
+            // Switch between "flex" (to show and center) and "none" (to hide)
+            if (popup.style.display === "flex") {
+                popup.style.display = "none";
+            } else {
+                popup.style.display = "flex";
+            }
+        }
+
+        // Optional: Close popup if clicking outside the content box
+        window.onclick = function(event) {
+            const popup = document.getElementById("fullPagePopup");
+            if (event.target == popup) {
+                popup.style.display = "none";
+            }
+        };
+    </script>
 
 @endsection

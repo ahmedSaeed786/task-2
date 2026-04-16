@@ -15,6 +15,19 @@
             padding-top: 50px;
             margin: auto;
         }
+
+        #nameError {
+            display: none;
+            font-size: 0.8em;
+        }
+
+        #nameError.visible {
+            display: block;
+        }
+
+        input.invalid {
+            border-color: red;
+        }
     </style>
     <!-- Page Heading -->
 
@@ -131,81 +144,6 @@
 
 
 
-    <script>
-        $(document).ready(function() {
-
-
-
-            let isValid = {
-
-                name: false,
-                email: false,
-                password: false,
-                repeat_password: false
-            };
-
-
-            function validateField(fieldName, value) {
-                return $.ajax({
-                    url: "{{ route('user.validate') }}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        field: fieldName,
-                        value: value
-                    },
-                    success: function() {
-                        let input = $('[name="' + fieldName + '"]');
-
-                        input.removeClass('is-invalid');
-                        $('#error-' + fieldName).remove();
-
-                        isValid[fieldName] = true;
-                    },
-                    error: function(xhr) {
-                        let error = xhr.responseJSON.error;
-                        let input = $('[name="' + fieldName + '"]');
-
-                        input.addClass('is-invalid');
-                        $('#error-' + fieldName).remove();
-
-                        input.after(
-                            '<div id="error-' + fieldName + '" class="invalid-feedback">' +
-                            error +
-                            '</div>'
-                        );
-
-                        isValid[fieldName] = false;
-                    }
-                });
-            }
-
-
-            $('#customerForm').on('submit', function(e) {
-                e.preventDefault();
-
-                let name = $('#name').val();
-                let email = $('#email').val();
-                let password = $('#password').val();
-
-                $.when(
-                    validateField('name', name),
-                    validateField('password', password),
-                    validateField('email', email)
-                ).done(function() {
-
-                    if (isValid.name && isValid.email && isValid.pass) {
-
-
-
-                        $('#customerForm')[0].submit();
-                    }
-
-                });
-            });
-
-        });
-    </script>
 
 
     <script>

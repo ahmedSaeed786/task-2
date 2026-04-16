@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="col">
                                     <input type="text" class="form-control" autocomplete="off"
-                                        value="{{ old('total') }}" name="total" placeholder="Total">
+                                        value="{{ old('total') }}" name="total" placeholder="Total" readonly>
                                 </div>
                                 <div class="col">
                                     <input type="button" value="Add Item" id="btnAddItem" class="btn btn-success">
@@ -164,7 +164,7 @@
                                             <form class="user" method="POST" action="{{ Route('destroy') }}">
 
                                                 @csrf
-                                                @method('delete')
+
                                                 <input type="hidden" name="id" value="{{ $order->id }}">
                                                 <button type="submit" class="btn btn-danger">
                                                     Delete</button>
