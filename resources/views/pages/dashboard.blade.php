@@ -282,7 +282,8 @@
                                                         <p id="getDate"></p>
                                                     </div>
                                                     <div><strong>Phone:</strong>
-                                                        <p id="getPhone"></p>
+                                                        <div id="getPhone">
+                                                        </div>
                                                     </div>
                                                 </div>
 
